@@ -7,8 +7,8 @@
 #define CHECKSUM_SIZE 8
 
 typedef struct packetHeader {
-	unsigned short version;
-	unsigned int op_code;
+	unsigned int version;
+	unsigned short op_code;
 	char* checksum;
 	unsigned int payload_size;
 	char* payload_checksum;
@@ -42,7 +42,7 @@ PacketHeader* create_packet_header(
 	Print a packet
 */
 void print_packet_header(PacketHeader* packet_header) {
-	printf("PacketHeader v.%hu\n\nOP Code: %hd\nHeader Checksum: %s\nPayload Size: %hd\nPayload Checksum: %s\n", packet_header->version, packet_header->op_code, packet_header->checksum, packet_header->payload_size, packet_header->payload_checksum);
+	printf("PacketHeader v.%u\n\nOP Code: %02hu\nHeader Checksum: %s\nPayload Size: %u\nPayload Checksum: %s\n", packet_header->version, packet_header->op_code, packet_header->checksum, packet_header->payload_size, packet_header->payload_checksum);
 }
 
 /**
@@ -58,13 +58,13 @@ char* build_packet_header(PacketHeader packet_header) {
 	memset(buffer, 0x0, 16);
 
 	// Version
-	len = sprintf(buffer, "%hu", packet_header.version);
+	len = sprintf(buffer, "%04u", packet_header.version);
 	memcpy(ptr, buffer, len);
 	ptr += len;
 
 	// OP Code
 	memset(buffer, 0x0, 16);
-	len = sprintf(buffer, "%hd", packet_header.op_code);
+	len = sprintf(buffer, "%02hu", packet_header.op_code);
 	memcpy(ptr, buffer, len);
 	ptr += len;
 
@@ -74,7 +74,7 @@ char* build_packet_header(PacketHeader packet_header) {
 
 	// Payload Size
 	memset(buffer, 0x0, 16);
-	len = sprintf(buffer, "%hd", packet_header.payload_size);
+	len = sprintf(buffer, "%010u", packet_header.payload_size);
 	memcpy(ptr, buffer, len);
 	ptr += len;
 
