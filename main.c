@@ -84,6 +84,43 @@ char* build_packet_header(PacketHeader packet_header) {
   return out_str;
 }
 
+/**
+	Parse packet header
+*/
+PacketHeader* parse_packet_header(char* payload) {
+	PacketHeader* packet_header;
+	char* ptr;
+	char buffer[16];
+
+	packet_header = (PacketHeader*) malloc(sizeof(PacketHeader));
+	ptr = payload;
+
+	memset(buffer, '\0', 16);
+	memcpy(buffer, ptr, 4);
+	packet_header->version = (unsigned int) strtol(buffer, NULL, 10);
+	ptr += 4;
+
+	memset(buffer, '\0', 16);
+	memcpy(buffer, ptr, 2);
+	packet_header->op_code = (unsigned short) strtol(buffer, NULL, 10);
+	ptr += 2;
+
+	memset(buffer, '\0', 16);
+	memcpy(buffer, ptr, 10);
+	packet_header->payload_size = (unsigned int) strtol(buffer, NULL, 10);
+	ptr += 10;
+
+	packet_header->payload_checksum = (char*) malloc(CHECKSUM_SIZE);
+	memcpy(packet_header->payload_checksum, ptr, CHECKSUM_SIZE);
+	ptr += CHECKSUM_SIZE;
+
+	packet_header->checksum = (char*) malloc(CHECKSUM_SIZE);
+	memcpy(packet_header->checksum, ptr, CHECKSUM_SIZE);
+	ptr += CHECKSUM_SIZE;
+
+	return packet_header;
+}
+
 int main() {
 	PacketHeader* packet_header = create_packet_header(0x1, 0x1, 0, "00000000", "13245768");
 
@@ -92,11 +129,17 @@ int main() {
 	char* built_packet = build_packet_header(*packet_header);
 
 	printf("\nBuilt packet header:\n%s\n\n", built_packet);
-	free(built_packet);
 	free(packet_header->checksum);
 	free(packet_header->payload_checksum);
 	free(packet_header);
 
+	packet_header = parse_packet_header(built_packet);
+	free(built_packet);
+	print_packet_header(packet_header);
+
+	free(packet_header->checksum);
+	free(packet_header->payload_checksum);
+	free(packet_header);
 	return 0;
 }
 
