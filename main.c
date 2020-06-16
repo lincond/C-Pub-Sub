@@ -9,9 +9,9 @@
 typedef struct packetHeader {
 	unsigned int version;
 	unsigned short op_code;
-	char* checksum;
 	unsigned int payload_size;
 	char* payload_checksum;
+	char* checksum;
 } PacketHeader;
 
 /**
@@ -20,9 +20,9 @@ typedef struct packetHeader {
 PacketHeader* create_packet_header(
 	unsigned int version,
 	unsigned short op_code,
-	const char* checksum,
 	unsigned int payload_size,
-	const char* payload_checksum
+	const char* payload_checksum,
+	const char* checksum
 ) {
 	PacketHeader* ptr = (PacketHeader*) malloc(sizeof(PacketHeader));
 	ptr->version = version;
@@ -68,25 +68,24 @@ char* build_packet_header(PacketHeader packet_header) {
 	memcpy(ptr, buffer, len);
 	ptr += len;
 
-	// Checksum
-	memcpy(ptr, packet_header.checksum, CHECKSUM_SIZE);
-	ptr += CHECKSUM_SIZE;
-
 	// Payload Size
 	memset(buffer, 0x0, 16);
 	len = sprintf(buffer, "%010u", packet_header.payload_size);
 	memcpy(ptr, buffer, len);
 	ptr += len;
 
-	// Checksum
+	// Payload Checksum
 	memcpy(ptr, packet_header.payload_checksum, CHECKSUM_SIZE);
 	ptr += CHECKSUM_SIZE;
 
+	// HeaderChecksum
+	memcpy(ptr, packet_header.checksum, CHECKSUM_SIZE);
+	ptr += CHECKSUM_SIZE;
   return out_str;
 }
 
 int main() {
-	PacketHeader* packet_header = create_packet_header(0x1, 0x1, "13245768", 0, "00000000");
+	PacketHeader* packet_header = create_packet_header(0x1, 0x1, 0, "00000000", "13245768");
 
 	print_packet_header(packet_header);
 
