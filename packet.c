@@ -113,3 +113,20 @@ PacketHeader* parse_packet_header(char* payload) {
 
 	return packet_header;
 }
+
+/**
+    Free allocated memory for packet_header
+ */
+void free_packet_header(PacketHeader* packet_header) {
+    if (packet_header->checksum != NULL) {
+        free(packet_header->checksum);
+        packet_header->checksum = NULL;
+    }
+
+    if (packet_header->payload_checksum != NULL) {
+	    free(packet_header->payload_checksum);
+        packet_header->payload_checksum = NULL;
+    }
+
+	free(packet_header);
+}

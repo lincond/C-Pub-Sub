@@ -13,17 +13,13 @@ int main() {
 	char* built_packet = build_packet_header(*packet_header);
 
 	printf("\nBuilt packet header:\n%s\n\n", built_packet);
-	free(packet_header->checksum);
-	free(packet_header->payload_checksum);
-	free(packet_header);
+	free_packet_header(packet_header);
 
 	packet_header = parse_packet_header(built_packet);
 	free(built_packet);
 	print_packet_header(packet_header);
 
-	free(packet_header->checksum);
-	free(packet_header->payload_checksum);
-	free(packet_header);
+	free_packet_header(packet_header);
 	return 0;
 }
 

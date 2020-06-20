@@ -18,3 +18,4 @@ PacketHeader* create_packet_header(
 void print_packet_header(PacketHeader*);
 char* build_packet_header(PacketHeader);
 PacketHeader* parse_packet_header(char*);
+void free_packet_header(PacketHeader*);
